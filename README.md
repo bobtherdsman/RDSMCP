@@ -1,6 +1,6 @@
 # RDS MCP - SQL Server to RDS Migration Assessment Tool
 
-A Python-based tool for assessing SQL Server instances for migration to AWS RDS. Functionally equivalent to PowerShell RDSDiscoveryGuide for automated technical discovery. Available as both a CLI tool and an MCP (Model Context Protocol) server for integration with AI assistants.
+A Python-based tool for assessing Windows SQL Server instances for migration to AWS RDS. Functionally equivalent to PowerShell RDSDiscoveryGuide for automated technical discovery. Available as both a CLI tool and an MCP (Model Context Protocol) server for integration with AI assistants.
 
 ## Features
 
@@ -15,54 +15,31 @@ A Python-based tool for assessing SQL Server instances for migration to AWS RDS.
 - **Enterprise Features**: Detects Enterprise-only features without blocking RDS migration
 - **Automated Technical Focus**: Excludes business survey questions
 
-## Installation
+## Installation (Windows)
 
 ### Prerequisites
 
 **Python:**
 - Python 3.8 or higher
-- pip package manager
+- Download from: https://www.python.org/downloads/
+- During installation, check "Add Python to PATH"
 
 **ODBC Driver for SQL Server:**
-
-The tool requires Microsoft ODBC Driver 18 for SQL Server.
-
-**Linux (Ubuntu/Debian):**
-```bash
-curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-sudo apt-get update
-sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
-```
-
-**Linux (RHEL/CentOS):**
-```bash
-curl https://packages.microsoft.com/config/rhel/8/prod.repo | sudo tee /etc/yum.repos.d/mssql-release.repo
-sudo yum remove unixODBC-utf16 unixODBC-utf16-devel
-sudo ACCEPT_EULA=Y yum install -y msodbcsql18
-```
-
-**macOS:**
-```bash
-brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
-brew update
-HOMEBREW_ACCEPT_EULA=Y brew install msodbcsql18
-```
-
-**Windows:**
-- Download from: https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server
+- Download Microsoft ODBC Driver 18 for SQL Server from: https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server
 - Run installer and follow prompts
 
 ### Install RDS MCP Tool
 
-```bash
+Open Command Prompt or PowerShell:
+
+```cmd
 # Clone repository
 git clone <repo-url>
 cd rdsmcp
 
 # Create virtual environment (recommended)
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv venv
+venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -70,12 +47,12 @@ pip install -r requirements.txt
 
 ### Verify Installation
 
-```bash
+```cmd
 # Test CLI
-python3 cli.py --help
+python cli.py --help
 
 # Test connection to SQL Server
-python3 cli.py analyze --host <your-server> --username <user> --password <password>
+python cli.py analyze --host <your-server> --username <user> --password <password>
 ```
 
 ## Usage
@@ -85,29 +62,29 @@ python3 cli.py analyze --host <your-server> --username <user> --password <passwo
 #### Single Server Analysis
 
 **SQL Authentication:**
-```bash
-python cli.py analyze --host <hostname> --username <user> --password <pass> [--port 1433]
+```cmd
+python cli.py analyze --host <hostname> --username <user> --password <pass>
 ```
 
 **Windows Authentication:**
-```bash
-python cli.py analyze --host <hostname> --windows-auth [--port 1433]
+```cmd
+python cli.py analyze --host <hostname> --windows-auth
 ```
 
 #### Batch Analysis
 
 **SQL Authentication:**
-```bash
+```cmd
 python cli.py batch --input servers.txt --username <user> --password <pass> --output results.csv
 ```
 
 **Windows Authentication:**
-```bash
+```cmd
 python cli.py batch --input servers.txt --windows-auth --output results.csv
 ```
 
 **With DBC.CSV output:**
-```bash
+```cmd
 python cli.py batch --input servers.txt --username <user> --password <pass> --output results.csv --dbc
 ```
 This generates both `results.csv` (39 columns) and `results_DBC.csv` (23 columns)
@@ -120,7 +97,7 @@ server2.example.com
 ```
 
 #### Instance Recommendation
-```bash
+```cmd
 python cli.py recommend --cpu 16 --memory 64 --edition SE --version 15
 ```
 
@@ -132,8 +109,8 @@ Configure in your MCP client (e.g., Kiro CLI):
 {
   "mcpServers": {
     "rds-discovery": {
-      "command": "/path/to/venv/bin/python",
-      "args": ["/path/to/rdsmcp/server.py"]
+      "command": "C:\\path\\to\\venv\\Scripts\\python.exe",
+      "args": ["C:\\path\\to\\rdsmcp\\server.py"]
     }
   }
 }
@@ -239,65 +216,16 @@ Generate with `--dbc` flag: `python cli.py batch --input servers.txt --username 
 38. isSSRS
 39. Note
 
-### JSON Output (MCP/CLI)
-```json
-{
-  "server_info": {
-    "edition": "Standard Edition (64-bit)",
-    "version": "16.0.4095.4",
-    "is_clustered": false,
-    "source": "EC2/OnPrem"
-  },
-  "resources": {
-    "cpu": 16,
-    "max_memory_mb": 32768,
-    "total_db_size_gb": 100.5
-  },
-  "features": {
-    "linked_servers": "N",
-    "filestream": "N",
-    "server_triggers": "N",
-    "always_on_ag": "N",
-    "enterprise_features": "",
-    "ssis": "N",
-    "ssrs": "N"
-  },
-  "rds_compatible": true,
-  "recommendation": {
-    "primary_recommendation": "db.m6i.4xlarge",
-    "recommended_instances": ["db.m6i.4xlarge", "db.m5d.4xlarge"],
-    "type": "G"
-  }
-}
-```
-
-## Instance Recommendations
-
-- **General Purpose (G)**: db.m5d.*, db.m6i.* (no t3 burstable instances)
-- **Memory Optimized (M)**: db.r*, db.x*, db.z1d.* (excludes db.m*, db.r3*, db.r4*, db.t3*, db.x1*, db.x1e*)
-- **High Memory (>1TB)**: db.x* family
-- **Sizing**: Based on CPU/4 ratio, matches PowerShell logic
-
-## Requirements
-
-- Python 3.8+
-- pyodbc
-- ODBC Driver 18 for SQL Server
-- SQL Server credentials with appropriate permissions OR Windows Authentication
-- AwsInstancescsv.csv (RDS instance data)
-
 ## Authentication Methods
 
 ### SQL Authentication
 - Requires username and password
-- Works on Windows and Linux
 - Example: `--username sa --password MyPassword123`
 
 ### Windows Authentication (Trusted Connection)
 - Uses current Windows user credentials
 - Requires `--windows-auth` flag
 - No username/password needed
-- Windows only (or Linux with Kerberos configured)
 - Example: `--windows-auth`
 
 ## Permissions Required
@@ -308,22 +236,14 @@ The tool requires the following SQL Server permissions:
 - Access to system databases (master, msdb)
 - sp_MSforeachdb execution (for Enterprise Features, File Tables, SSIS detection)
 
-## Differences from PowerShell
+## Requirements
 
-### Not Included (Intentional)
-- **Business Questions (L100)**: 9 manual input questions excluded (requires human input)
-- **Elasticache Analysis**: Read/write pattern analysis not implemented
-- **Utilization-Based Scaling**: CPU/Memory utilization adjustments not implemented
-
-### Improvements Over PowerShell
-- **Windows Authentication Support**: Added Trusted Connection support (PowerShell has this)
-- **More Accurate RDS Compatibility**: Correctly excludes SSIS/SSRS/Enterprise Features/Always On from blocking
-- **Correct RDS Custom Limit**: 16TB (PowerShell uses 14.5TB)
-- **SSIS/SSRS Columns**: Added to CSV output (PowerShell doesn't include)
-- **Dynamic Notes**: Adds SSIS/SSRS detection info to notes field
-- **Better Error Handling**: Detailed error capture with summary statistics
-- **JSON Output**: Available in addition to CSV
-- **MCP Integration**: Can be used as tool by AI assistants
+- Windows OS
+- Python 3.8+
+- pyodbc
+- ODBC Driver 18 for SQL Server
+- SQL Server credentials with appropriate permissions OR Windows Authentication
+- AwsInstancescsv.csv (RDS instance data)
 
 ## License
 
