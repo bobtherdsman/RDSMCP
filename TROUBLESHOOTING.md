@@ -210,19 +210,21 @@ python cli.py recommend --cpu 16 --memory 64 --edition SE --version 15
 
 ### Installation
 
-**Issue: ODBC Driver 18 not installed**
+**Issue: ODBC Driver not installed**
 
 **Solution:**
-1. Download from: https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server
+1. Download ODBC Driver 17 or 18 from: https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server
 2. Run installer and follow prompts
 3. Restart PowerShell
+
+**Note:** ODBC Driver 17 is backward compatible and works with this tool. You don't need to upgrade to 18 if you already have 17 installed.
 
 **Verify:**
 Check installed ODBC drivers in Windows:
 1. Press `Windows Key + R`
 2. Type `odbcad32` and press Enter
 3. Go to "Drivers" tab
-4. Look for "ODBC Driver 18 for SQL Server"
+4. Look for "ODBC Driver 17 for SQL Server" or "ODBC Driver 18 for SQL Server"
 
 ---
 
