@@ -1,3 +1,0 @@
-sqlserver.c8gp6baoubnh.us-east-1.rds.amazonaws.com
-44.200.66.204
-3.81.26.46

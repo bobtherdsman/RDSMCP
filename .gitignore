@@ -40,3 +40,8 @@ tmp/
 # OS
 .DS_Store
 Thumbs.db
+
+# Backup directories
+rdsmcpbackup/
+v1/
+v2/
