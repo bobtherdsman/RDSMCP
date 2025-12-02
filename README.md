@@ -325,17 +325,6 @@ The tool requires the following SQL Server permissions:
 - **JSON Output**: Available in addition to CSV
 - **MCP Integration**: Can be used as tool by AI assistants
 
-## Validation
-
-Tested against PowerShell RDSDiscoveryGuidev5.ps1:
-- ✅ SQL queries 100% identical
-- ✅ RDS compatibility logic matches (18 feature checks)
-- ✅ Instance recommendations match (db.m* family, no t3)
-- ✅ CSV output format compatible (39 vs 45 columns, minus business questions)
-- ✅ SSIS detection with Data Collector filtering
-- ✅ SSRS detection (ReportServer databases)
-- ✅ Enterprise Features detection (sys.dm_db_persisted_sku_features)
-
 ## License
 
 MIT License
