@@ -6,6 +6,37 @@ from typing import Dict, Any, Tuple
 from sql_queries import FULL_ASSESSMENT_QUERY
 
 
+def get_available_odbc_driver() -> str:
+    """Detect available ODBC driver for SQL Server
+    
+    Returns:
+        str: ODBC driver name (e.g., "ODBC Driver 18 for SQL Server")
+    
+    Raises:
+        Exception: If no compatible ODBC driver is found
+    """
+    drivers = [d for d in pyodbc.drivers() if 'SQL Server' in d]
+    
+    # Prefer newer drivers first
+    preferred_order = [
+        'ODBC Driver 18 for SQL Server',
+        'ODBC Driver 17 for SQL Server',
+        'ODBC Driver 13 for SQL Server',
+        'ODBC Driver 11 for SQL Server',
+        'SQL Server Native Client 11.0',
+        'SQL Server'
+    ]
+    
+    for preferred in preferred_order:
+        if preferred in drivers:
+            return preferred
+    
+    if drivers:
+        return drivers[0]
+    
+    raise Exception("No ODBC driver for SQL Server found. Please install ODBC Driver 17 or 18.")
+
+
 def test_sql_connection(host: str, username: str = None, password: str = None, 
                        port: int = 1433, use_windows_auth: bool = False, 
                        timeout: int = 10) -> Tuple[bool, str]:
@@ -27,10 +58,15 @@ def test_sql_connection(host: str, username: str = None, password: str = None,
     Returns:
         tuple: (success: bool, error_message: str)
     """
+    try:
+        driver = get_available_odbc_driver()
+    except Exception as e:
+        return (False, str(e))
+    
     if use_windows_auth:
-        conn_str = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={host},{port};Trusted_Connection=yes;Encrypt=yes;TrustServerCertificate=yes"
+        conn_str = f"DRIVER={{{driver}}};SERVER={host},{port};Trusted_Connection=yes;Encrypt=yes;TrustServerCertificate=yes"
     else:
-        conn_str = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={host},{port};UID={username};PWD={password};Encrypt=yes;TrustServerCertificate=yes"
+        conn_str = f"DRIVER={{{driver}}};SERVER={host},{port};UID={username};PWD={password};Encrypt=yes;TrustServerCertificate=yes"
     
     try:
         conn = pyodbc.connect(conn_str, timeout=timeout)
@@ -48,13 +84,16 @@ def analyze_sql_server(host: str, username: str = None, password: str = None, po
     if not success:
         raise Exception(f"Connection test failed: {error}")
     
+    # Get available ODBC driver
+    driver = get_available_odbc_driver()
+    
     # Proceed with full assessment
     if use_windows_auth:
         # Windows Authentication (Kerberos/NTLM)
-        conn_str = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={host},{port};Trusted_Connection=yes;Encrypt=yes;TrustServerCertificate=yes"
+        conn_str = f"DRIVER={{{driver}}};SERVER={host},{port};Trusted_Connection=yes;Encrypt=yes;TrustServerCertificate=yes"
     else:
         # SQL Authentication
-        conn_str = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={host},{port};UID={username};PWD={password};Encrypt=yes;TrustServerCertificate=yes"
+        conn_str = f"DRIVER={{{driver}}};SERVER={host},{port};UID={username};PWD={password};Encrypt=yes;TrustServerCertificate=yes"
     
     with pyodbc.connect(conn_str, timeout=30) as conn:
         # Add output converter for SQL_VARIANT and other types
