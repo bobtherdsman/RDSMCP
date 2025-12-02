@@ -34,8 +34,8 @@ Open Command Prompt or PowerShell:
 
 ```cmd
 # Clone repository
-git clone <repo-url>
-cd rdsmcp
+git clone https://github.com/bobtherdsman/RDSMCP.git
+cd RDSMCP
 
 # Create virtual environment (recommended)
 python -m venv venv
