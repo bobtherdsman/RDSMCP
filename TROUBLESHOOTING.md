@@ -217,26 +217,46 @@ python cli.py recommend --cpu 16 --memory 64 --edition SE --version 15
 2. Run installer and follow prompts
 3. Restart PowerShell
 
-**Note:** ODBC Driver 17 is backward compatible and works with this tool. You don't need to upgrade to 18 if you already have 17 installed.
+**Note:** The tool automatically detects and uses the installed ODBC driver. It supports:
+- ODBC Driver 18 for SQL Server (preferred)
+- ODBC Driver 17 for SQL Server
+- ODBC Driver 13 for SQL Server
+- ODBC Driver 11 for SQL Server
+- SQL Server Native Client 11.0
+- SQL Server (legacy)
+
+You don't need a specific version - the tool will use whichever is installed.
 
 **Verify:**
 Check installed ODBC drivers in Windows:
 1. Press `Windows Key + R`
 2. Type `odbcad32` and press Enter
 3. Go to "Drivers" tab
-4. Look for "ODBC Driver 17 for SQL Server" or "ODBC Driver 18 for SQL Server"
+4. Look for any "ODBC Driver XX for SQL Server" or "SQL Server Native Client"
+
+**Check via PowerShell:**
+```powershell
+Get-OdbcDriver | Where-Object {$_.Name -like "*SQL Server*"}
+```
 
 ---
 
 ### Connection Issues
 
-**Issue: "Data source name not found"**
+**Issue: "Data source name not found and no default driver specified"**
 
-**Cause:** ODBC driver not installed or wrong driver version
+**Cause:** No ODBC driver for SQL Server is installed
 
 **Solution:**
-- Install ODBC Driver 18 for SQL Server
-- Or modify connection string to use available driver
+1. Install ODBC Driver 17 or 18 (see Installation section above)
+2. The tool will automatically detect and use it
+
+**Alternative:** If you have an older driver installed, verify it's detected:
+```powershell
+python -c "import pyodbc; print([d for d in pyodbc.drivers() if 'SQL Server' in d])"
+```
+
+If this shows an empty list, you need to install an ODBC driver.
 
 ---
 

@@ -27,7 +27,7 @@ A Python-based tool for assessing Windows SQL Server instances for migration to 
 **ODBC Driver for SQL Server:**
 - Download Microsoft ODBC Driver 17 or 18 for SQL Server from: https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server
 - Run installer and follow prompts
-- Note: ODBC Driver 17 is backward compatible and works with this tool
+- **Note:** The tool automatically detects and uses the installed ODBC driver (supports Driver 17, 18, 13, 11, or SQL Server Native Client)
 
 ### Install RDS MCP Tool
 
@@ -242,7 +242,7 @@ The tool requires the following SQL Server permissions:
 - Windows OS
 - Python 3.8+
 - pyodbc
-- ODBC Driver 17 or 18 for SQL Server
+- ODBC Driver for SQL Server (17, 18, 13, 11, or SQL Server Native Client - auto-detected)
 - SQL Server credentials with appropriate permissions OR Windows Authentication
 - AwsInstancescsv.csv (RDS instance data)
 
