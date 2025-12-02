@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **ODBC Driver Auto-Detection**: Automatically detects and uses installed ODBC driver (supports Driver 18, 17, 13, 11, SQL Server Native Client, or legacy SQL Server driver)
+
 ## [3.0.0] - 2025-12-01
 
 ### Added
