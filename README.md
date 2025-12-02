@@ -13,7 +13,7 @@ A Python-based tool for assessing SQL Server instances for migration to AWS RDS.
 - **DBC Export**: 23-column Database Consolidation format for migration planning
 - **SSIS/SSRS Detection**: Identifies Integration/Reporting Services (informational only)
 - **Enterprise Features**: Detects Enterprise-only features without blocking RDS migration
-- **Automated Technical Focus**: Excludes business survey questions (see [EXCLUDED_COLUMNS.md](EXCLUDED_COLUMNS.md))
+- **Automated Technical Focus**: Excludes business survey questions
 
 ## Installation
 
