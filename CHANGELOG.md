@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - **ODBC Driver Auto-Detection**: Automatically detects and uses installed ODBC driver (supports Driver 18, 17, 13, 11, SQL Server Native Client, or legacy SQL Server driver)
 
+### Fixed
+- **RDS Source Detection**: Servers already running on RDS now always show as "RDS Compatible" regardless of detected features (prevents false negatives from RDS internal system objects)
+
 ## [3.0.0] - 2025-12-01
 
 ### Added

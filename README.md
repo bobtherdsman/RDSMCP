@@ -126,6 +126,8 @@ Available MCP tools:
 
 The tool evaluates the following features for RDS compatibility (matches PowerShell logic exactly):
 
+**Note:** Servers already running on AWS RDS are automatically marked as "RDS Compatible" regardless of detected features, as they are already successfully running on RDS.
+
 ### Blocking Features (RDS Incompatible)
 1. Database Count > 100
 2. Linked Servers (heterogeneous - non-SQL Server/Oracle)
