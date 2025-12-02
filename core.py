@@ -149,28 +149,32 @@ def analyze_sql_server(host: str, username: str = None, password: str = None, po
         
         # RDS Compatibility - match PowerShell logic exactly
         # Check only these features (exclude: always_on_ag, always_on_fci, server_role, ssis, ssrs, enterprise_features)
-        blockers = [
-            features['database_count'],
-            features['linked_servers'],
-            features['log_shipping'],
-            features['filestream'],
-            features['resource_governor'],
-            features['transaction_replication'],
-            features['extended_procedures'],
-            features['tsql_endpoints'],
-            features['polybase'],
-            features['file_tables'],
-            features['buffer_pool_extension'],
-            features['stretch_database'],
-            features['trustworthy_databases'],
-            features['server_triggers'],
-            features['machine_learning'],
-            features['policy_based_management'],
-            features['data_quality_services'],
-            features['clr_enabled']
-        ]
-        
-        rds_compatible = all(v in ['N', 'Not Supported', 'N/A', ''] for v in blockers)
+        # If source is already RDS, it's always RDS compatible
+        if server_info['source'] == 'RDS':
+            rds_compatible = True
+        else:
+            blockers = [
+                features['database_count'],
+                features['linked_servers'],
+                features['log_shipping'],
+                features['filestream'],
+                features['resource_governor'],
+                features['transaction_replication'],
+                features['extended_procedures'],
+                features['tsql_endpoints'],
+                features['polybase'],
+                features['file_tables'],
+                features['buffer_pool_extension'],
+                features['stretch_database'],
+                features['trustworthy_databases'],
+                features['server_triggers'],
+                features['machine_learning'],
+                features['policy_based_management'],
+                features['data_quality_services'],
+                features['clr_enabled']
+            ]
+            
+            rds_compatible = all(v in ['N', 'Not Supported', 'N/A', ''] for v in blockers)
         
         return {
             "server_info": server_info,
